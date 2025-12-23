@@ -16,6 +16,13 @@ jobs:
           architecture: x64
 
       - run: flutter pub get
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod repo update
+          pod install
+
 
       - name: Patch bluetooth_print_plus headers
         run: |
