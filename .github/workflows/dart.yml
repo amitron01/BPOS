@@ -16,13 +16,13 @@ jobs:
           architecture: x64
 
       - run: flutter pub get
-          
-      - run: |
-          cd ios
-          rm -rf Pods Podfile.lock
-          pod repo update
-          pod install
-          cd ..
+     
+      - name: Install CocoaPods dependencies        
+        run: |
+            cd ios
+            rm -rf Pods Podfile.lock
+            pod repo update
+            pod install          
           
       - run: flutter clean
 
