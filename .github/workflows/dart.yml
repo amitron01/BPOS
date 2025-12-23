@@ -23,9 +23,8 @@ jobs:
           pod repo update
           pod install
           cd ..
-          flutter clean
-
-      - run: flutter pub get
+          
+      - run: flutter clean
 
       - name: Patch bluetooth_print_plus headers
         run: |
