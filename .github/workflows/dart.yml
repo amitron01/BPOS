@@ -22,6 +22,14 @@ jobs:
 
       - run: pod install
         working-directory: ios
+      
+      - run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod repo update
+          pod install
+          cd ..
+          flutter clean
         
       - run: flutter build ios --release --no-codesign
 
