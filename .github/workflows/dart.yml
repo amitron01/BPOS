@@ -14,8 +14,12 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
+
       - run: flutter pub get
-      
+
+      - name: Patch bluetooth_print_plus headers
+        run: |
+          sed -i '' 's|#import <GSDK/.*>|@import GSDK;|g' ~/.pub-cache/hosted/pub.dev/bluetooth_print_plus-2.4.6/ios/Classes/*.h
 
       - run: pod repo update
         working-directory: ios
