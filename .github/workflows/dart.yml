@@ -15,20 +15,15 @@ jobs:
           channel: 'stable'
           architecture: x64
 
-      - run: flutter pub get
-     
-      - name: Copy GSDK framework
-        run: |
-            mkdir -p ios/Frameworks
-            cp -R ios/Frameworks/GSDK ios/Frameworks/
-     
+      - run: flutter pub get     
+         
       - name: Install CocoaPods dependencies        
         run: |
             cd ios
             rm -rf Pods Podfile.lock
             pod repo update
             pod install          
-          
+            cd..
       - run: flutter clean
 
       - name: Patch bluetooth_print_plus headers
