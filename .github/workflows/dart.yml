@@ -20,7 +20,7 @@ jobs:
       - name: Copy GSDK framework
         run: |
             mkdir -p ios/Frameworks
-            cp -R path_in_repo/GSDK ios/Frameworks/
+            cp -R ios/Frameworks/GSDK ios/Frameworks/
      
       - name: Install CocoaPods dependencies        
         run: |
