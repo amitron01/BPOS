@@ -25,7 +25,8 @@ jobs:
             pod install          
             cd..
       - run: flutter clean
-
+      - run: flutter build ios --release --no-codesign
+      
       - name: Patch bluetooth_print_plus headers
         run: |
           sed -i '' 's|#import <GSDK/.*>|@import GSDK;|g' $HOME/.pub-cache/hosted/pub.dev/bluetooth_print_plus-2.4.6/ios/Classes/*.h
