@@ -1,35 +1,48 @@
-name: Flutter iOS CI
+platform :ios, '13.0'
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-jobs:
-  build_ios:
-    runs-on: macos-latest
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4 # v4 লেটেস্ট এবং দ্রুত
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get first."
+  end
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.27.1' # আপনার পিসির ফ্লাটার ভার্সনটি এখানে দিলে ভালো হয় (৩.৩৮.৯ সম্ভবত ভুল ভার্সন নম্বর)
-          channel: 'stable'
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in Generated.xcconfig."
+end
 
-      - name: Install dependencies
-        run: flutter pub get
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
-      # ৫ নম্বর ধাপটি বাদ দিয়ে সরাসরি এই স্টেপটি ব্যবহার করুন
-      - name: Install Pods
-        run: |
-          cd ios
-          rm -rf Pods Podfile.lock
-          pod install --repo-update
-          cd ..
+flutter_ios_podfile_setup
 
-      - name: Build iOS App
-        run: flutter build ios --release --no-codesign
+target 'Runner' do
+  use_frameworks! :linkage => :static
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    # এটি Xcode-কে Flutter মডিউল খুঁজে পেতে সাহায্য করে
+    flutter_additional_ios_build_settings(installer)
+    
+    target.build_configurations.each do |config|
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      config.build_settings['DEFINES_MODULE'] = 'YES'
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+    end
+  end
+end
