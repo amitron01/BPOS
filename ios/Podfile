@@ -1,51 +1,49 @@
-platform :ios, '13.0'
+name: Flutter iOS CI
 
-ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-project 'Runner', {
-  'Debug' => :debug,
-  'Profile' => :release,
-  'Release' => :release,
-}
+jobs:
+  build_ios:
+    runs-on: macos-latest
 
-def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-  unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get first."
-  end
+    steps:
+      # ১. কোড চেকআউট
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-  File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/FLUTTER_ROOT\=(.*)/)
-    return matches[1].strip if matches
-  end
-  raise "FLUTTER_ROOT not found in Generated.xcconfig."
-end
+      # ২. ফ্লটার সেটআপ (ভার্সন ৩.২৭.১ স্ট্যাবল হিসেবে দেওয়া হয়েছে)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1' 
+          channel: 'stable'
+          cache: true
 
-require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+      # ৩. প্যাকেজ ডিপেন্ডেন্সি ইনস্টল
+      - name: Install dependencies
+        run: flutter pub get
 
-flutter_ios_podfile_setup
+      # ৪. আইওএস পড ইনস্টল (সরাসরি ক্লিন করে ইনস্টল হবে)
+      - name: Install iOS Pods
+        run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod install --repo-update
+          cd ..
 
-target 'Runner' do
-  use_frameworks! :linkage => :static
-  use_modular_headers!
+      # ৫. আইওএস অ্যাপ বিল্ড (Release, No Codesign)
+      - name: Build iOS App
+        run: flutter build ios --release --no-codesign
 
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-end
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    # ১. এটি অত্যন্ত জরুরি: ফ্লাটার প্লাগইনগুলোর জন্য বিল্ড সেটিংস সেট করে
-    flutter_additional_ios_build_settings(installer)
-    
-    target.build_configurations.each do |config|
-      # ২. আর্কিটেকচার এবং মডিউল সেটিংস
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
-      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-      config.build_settings['DEFINES_MODULE'] = 'YES'
-      config.build_settings['SWIFT_VERSION'] = '5.0'
-      
-      # ৩. Deployment Target নিশ্চিত করা
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
-    end
-  end
-end
+      # ৬. আর্টেফ্যাক্ট আপলোড (বিল্ড শেষে আপনি জিপ ফাইলটি ডাউনলোড করতে পারবেন)
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: build/ios/iphoneos/Runner.app
