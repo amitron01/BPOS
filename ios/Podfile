@@ -37,5 +37,4 @@ post_install do |installer|
       # iOS Simulator এর জন্য ARM64 exclude
       config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
     end
-  end
-end
+ end
