@@ -28,20 +28,25 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
+  use_frameworks! :linkage => :static
   use_modular_headers!
   
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 47e62a0 (Fix non-modular GSDK headers for CI build)
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-
     target.build_configurations.each do |config|
-      config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= '$(inherited)'
-      config.build_settings['FRAMEWORK_SEARCH_PATHS'] += ' ${PODS_ROOT}/GSDK'
+      # non-modular header allow
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+
+      # static framework compatibility
+      config.build_settings['DEFINES_MODULE'] = 'YES'
     end
   end
 end
