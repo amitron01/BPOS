@@ -32,7 +32,7 @@ jobs:
       - name: Install iOS Pods
         run: |
           cd ios
-          rm -rf Pods Podfile.lock
+          rm -rf Pods Podfile.lock Runner.xcworkspace
           pod install --repo-update
           cd ..
 
