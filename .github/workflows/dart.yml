@@ -1,11 +1,12 @@
 name: Flutter iOS CI
+
 on:
   push:
     branches:
       - main
   pull_request:
     branches:
-      - MAIN 
+      - main
 
 jobs:
   build_ios:
@@ -16,18 +17,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # ২. ফ্লটার সেটআপ (ভার্সন ৩.২৭.১ স্ট্যাবল হিসেবে দেওয়া হয়েছে)
+      # ২. ফ্লটার সেটআপ (Stable চ্যানেল ব্যবহার করা হয়েছে যাতে ভার্সন এরর না আসে)
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
-      # ৩. প্যাকেজ ডিপেন্ডেন্সি ইনস্টল
+      # ৩. ডিপেন্ডেন্সি ইনস্টল
       - name: Install dependencies
         run: flutter pub get
 
-      # ৪. আইওএস পড ইনস্টল (সরাসরি ক্লিন করে ইনস্টল হবে)
+      # ৪. পড ফাইল ক্লিন এবং নতুন করে ইনস্টল
       - name: Install iOS Pods
         run: |
           cd ios
@@ -35,13 +36,13 @@ jobs:
           pod install --repo-update
           cd ..
 
-      # ৫. আইওএস অ্যাপ বিল্ড (Release, No Codesign)
+      # ৫. আইওএস অ্যাপ বিল্ড (Release mode)
       - name: Build iOS App
         run: flutter build ios --release --no-codesign
 
-      # ৬. আর্টেফ্যাক্ট আপলোড (বিল্ড শেষে আপনি জিপ ফাইলটি ডাউনলোড করতে পারবেন)
+      # ৬. বিল্ড করা ফাইলটি জিপ করে ডাউনলোডের জন্য প্রস্তুত করা
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-build
+          name: BPOS-iOS-App
           path: build/ios/iphoneos/Runner.app
