@@ -30,7 +30,7 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-end
+  end
 
 post_install do |installer|
   # ✅ এটি লুপের বাইরে থাকতে হবে
@@ -46,4 +46,3 @@ post_install do |installer|
       config.build_settings['DEFINES_MODULE'] = 'YES'
     end
   end
-end
