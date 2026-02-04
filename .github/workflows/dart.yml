@@ -1,12 +1,11 @@
 name: Flutter iOS CI
-
 on:
   push:
     branches:
       - main
   pull_request:
     branches:
-      - main
+      - MAIN 
 
 jobs:
   build_ios:
