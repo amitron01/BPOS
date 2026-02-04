@@ -1,4 +1,4 @@
-[span_3](start_span)platform :ios, '13.0'[span_3](end_span)
+platform :ios, '13.0'
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -12,14 +12,14 @@ def flutter_root
   generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
   unless File.exist?(generated_xcode_build_settings_path)
     raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get first."
-  [span_4](start_span)end[span_4](end_span)
+  end
 
   File.foreach(generated_xcode_build_settings_path) do |line|
     matches = line.match(/FLUTTER_ROOT\=(.*)/)
     return matches[1].strip if matches
   end
   raise "FLUTTER_ROOT not found in Generated.xcconfig."
-[span_5](start_span)end[span_5](end_span)
+end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
@@ -34,14 +34,15 @@ end
 
 post_install do |installer|
   # ✅ এটি লুপের বাইরে থাকতে হবে
-  [span_6](start_span)flutter_additional_ios_build_settings(installer)[span_6](end_span)
+  flutter_additional_ios_build_settings(installer)
+  end
   
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       # আইওএস ভার্সন এবং মডিউল সেটিংস ফিক্স
-      [span_7](start_span)config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'[span_7](end_span)
-      [span_8](start_span)config.build_settings['SWIFT_VERSION'] = '5.0'[span_8](end_span)
-      [span_9](start_span)config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'[span_9](end_span)
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
       config.build_settings['DEFINES_MODULE'] = 'YES'
     end
   end
