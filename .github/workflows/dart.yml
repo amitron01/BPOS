@@ -2,9 +2,11 @@ name: Flutter iOS CI
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build_ios:
@@ -12,29 +14,29 @@ jobs:
 
     steps:
       - name: Checkout repo
-        [span_3](start_span)uses: actions/checkout@v4 #[span_3](end_span)
+        uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          [span_4](start_span)channel: 'stable' # নির্দিষ্ট ভার্সন না দিয়ে stable ব্যবহার করুন[span_4](end_span)
+          channel: 'stable'
           cache: true
 
       - name: Install dependencies
-        [span_5](start_span)run: flutter pub get #[span_5](end_span)
+        run: flutter pub get
 
       - name: Install iOS Pods
         run: |
           cd ios
-          [span_6](start_span)rm -rf Pods Podfile.lock Runner.xcworkspace # ক্যাশ পরিষ্কার করা[span_6](end_span)
+          rm -rf Pods Podfile.lock Runner.xcworkspace
           pod install --repo-update
           cd ..
 
       - name: Build iOS App
-        [span_7](start_span)run: flutter build ios --release --no-codesign #[span_7](end_span)
+        run: flutter build ios --release --no-codesign
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: BPOS-iOS-App
-          [span_8](start_span)path: build/ios/iphoneos/Runner.app #[span_8](end_span)
+          path: build/ios/iphoneos/Runner.app
