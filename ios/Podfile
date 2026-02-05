@@ -32,9 +32,10 @@ target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
-# নিচের ব্লকটি হুবহু কপি করুন
 post_install do |installer|
+  # ✅ এটি অবশ্যই লুপের বাইরে থাকতে হবে
   flutter_additional_ios_build_settings(installer)
+  
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
