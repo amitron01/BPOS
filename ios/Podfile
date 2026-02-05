@@ -33,7 +33,7 @@ target 'Runner' do
 end
 
 post_install do |installer|
-  # ✅ এটি অবশ্যই লুপের বাইরে থাকতে হবে
+  # [span_7](start_span)এটি লুপের বাইরে থাকতে হবে[span_7](end_span)
   flutter_additional_ios_build_settings(installer)
   
   installer.pods_project.targets.each do |target|
