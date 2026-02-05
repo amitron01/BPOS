@@ -2,47 +2,39 @@ name: Flutter iOS CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build_ios:
     runs-on: macos-latest
 
     steps:
-      # ১. কোড চেকআউট
       - name: Checkout repo
-        uses: actions/checkout@v4
+        [span_3](start_span)uses: actions/checkout@v4 #[span_3](end_span)
 
-      # ২. ফ্লটার সেটআপ (Stable চ্যানেল ব্যবহার করা হয়েছে যাতে ভার্সন এরর না আসে)
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          [span_4](start_span)channel: 'stable' # নির্দিষ্ট ভার্সন না দিয়ে stable ব্যবহার করুন[span_4](end_span)
           cache: true
 
-      # ৩. ডিপেন্ডেন্সি ইনস্টল
       - name: Install dependencies
-        run: flutter pub get
+        [span_5](start_span)run: flutter pub get #[span_5](end_span)
 
-      # ৪. পড ফাইল ক্লিন এবং নতুন করে ইনস্টল
       - name: Install iOS Pods
         run: |
           cd ios
-          rm -rf Pods Podfile.lock Runner.xcworkspace
+          [span_6](start_span)rm -rf Pods Podfile.lock Runner.xcworkspace # ক্যাশ পরিষ্কার করা[span_6](end_span)
           pod install --repo-update
           cd ..
 
-      # ৫. আইওএস অ্যাপ বিল্ড (Release mode)
       - name: Build iOS App
-        run: flutter build ios --release --no-codesign
+        [span_7](start_span)run: flutter build ios --release --no-codesign #[span_7](end_span)
 
-      # ৬. বিল্ড করা ফাইলটি জিপ করে ডাউনলোডের জন্য প্রস্তুত করা
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: BPOS-iOS-App
-          path: build/ios/iphoneos/Runner.app
+          [span_8](start_span)path: build/ios/iphoneos/Runner.app #[span_8](end_span)
