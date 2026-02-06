@@ -33,11 +33,12 @@ target 'Runner' do
 end
 
 post_install do |installer|
-  # [span_7](start_span)এটি লুপের বাইরে থাকতে হবে[span_7](end_span)
+  # ✅ সমাধান: এই ফাংশনটি লুপের বাইরে থাকতে হবে (এটিই আপনার এরর সমাধান করবে)
   flutter_additional_ios_build_settings(installer)
   
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
+      # আইওএস ভার্সন এবং মডিউল সেটিংস ফিক্স
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
       config.build_settings['SWIFT_VERSION'] = '5.0'
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
